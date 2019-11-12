@@ -40,6 +40,11 @@
                     required>
                     </v-text-field>
                 </v-col>
+                <v-col cols="3">
+                    <v-btn color="success" fab large dark @click="addProduct()">
+              <v-icon>mdi-check</v-icon>
+            </v-btn>
+                </v-col> 
             </v-row>
         </v-card>
 
@@ -80,10 +85,13 @@
     
 </template>
 <script>
+import axios from "axios"
+import baseUrl from "../utils/baseUrl.js"
 export default {
     name:"Products",
     data(){
-        return{      
+        return{  
+            url:  `${baseUrl()}product`,
             snackbar: false,
             snackbarText: String,     
             snackbarColor: "green",
@@ -98,20 +106,9 @@ export default {
             product:{
                 name : "",
                 type : "",
-                un : "",
-                quantity : 0
+                un : ""
             },
-            productList:[{
-                name : "Queijo",
-                type : "Laticinio",
-                un : "peça",
-                quantity : 0
-            },{
-                name : "Ovos",
-                type : "Laticinio",
-                un : "duzia",
-                quantity : 2
-            }],
+            productList:[],
         }
     }, 
     methods:{
@@ -126,7 +123,46 @@ export default {
                 this.snackbarColor = "red"
             }
             this.snackbar = true
-        }
+        },
+        getAll(){
+            return axios.get(this.url)
+                .then(response => {
+                this.productList = response.data
+            })
+        },
+        addProduct(){
+        return axios.post(this.url, this.product)
+            .then(response => {         
+            console.log(response)
+            
+            if(response.status == 200){
+                this.snackbarShow("Produto adicionado com sucesso", "green", true)            
+                this.getAll()       
+            }else{           
+                this.snackbarShow(`Ocorreu um problema ao criar o Produto (erro ${response.status})`, "red", true)
+            }
+            }).catch(error =>{
+                this.snackbarShow(`Ocorreu um problema ao criar o Produto (erro ${error.response})`, "red", true)
+            })      
+        },
+    removeLocal(){            
+      //TODO: Verificar se tem algum item no estoque antes de deletar.
+      return axios.delete(`${this.url}/${this.selectedLocal.id}`)
+        .then(response => {
+        this.showDeleteModal = false
+        this.getAll()
+      })       
+      
+    },
+    openDeleteModal(local){
+      this.selectedLocal = local     
+      this.showDeleteModal = true 
+    },
+    snackbarShow(text, color, show){
+      this.snackbarText = text
+      this.snackbarColor = color
+      this.snackbar = show
+    }
     },
     computed:{
         newProductButtonIcon(){
