@@ -114,7 +114,15 @@ export default {
                 this.localDatabase.push(local.name)
                 console.log(local.name)
             });
-      })
+        })
+
+        axios.get(`${baseUrl()}product`)
+        .then(response => {
+            response.data.forEach(product => {
+                this.productsDatabase.push(product.name)
+                console.log(product.name)
+            });
+        })
     },
     data(){
         return{            
@@ -127,18 +135,7 @@ export default {
                 transactionType : Boolean, //true -> entrada  |  false -> saida
             },
             localDatabase: [],
-            productsDatabase: [
-                'café',
-                'açucar',
-                'mingau',
-                'pão',
-                'azeite',
-                'item6',
-                'item7',
-                'item8',
-                'item9',
-                'item10',
-            ]
+            productsDatabase: []
         }
     },
     methods:{

@@ -21,29 +21,29 @@
                     </v-text-field>
                 </v-col>
                 <v-col
-                cols="3">
-                Fazer Select
-                    <v-text-field
+                cols="3">         
+                    <v-combobox
                     v-model="product.type"
-                    :counter="30"
-                    label="Tipo"
-                    required>
-                    </v-text-field>
+                    :items="type"
+                    label="Selecione um tipo"
+                    ></v-combobox>
                 </v-col>
                 <v-col
-                cols="3">
-                    Fazer Select
-                    <v-text-field
+                cols="3">                 
+                    <v-combobox
                     v-model="product.un"
-                    :counter="30"
-                    label="Unidade de medida"
-                    required>
-                    </v-text-field>
+                    :items="un"
+                    label="Selecione a unidade de medida"
+                    ></v-combobox>               
+
                 </v-col>
-                <v-col cols="3">
-                    <v-btn color="success" fab large dark @click="addProduct()">
-              <v-icon>mdi-check</v-icon>
-            </v-btn>
+                <v-col class="d-flex justify-center" cols="3">
+                    <v-btn                    
+                    color="success"
+                    class="mr-4"
+                    @click="addProduct()">
+                    Salvar
+                    </v-btn>              
                 </v-col> 
             </v-row>
         </v-card>
@@ -51,12 +51,11 @@
         <v-data-table 
         :headers="tableHeaders"
         :items="productList"
-        :items-per-page="5"
-        v-on:click:row="openDeleteModal(arguments[0])"
+        :items-per-page="5"    
         class="elevation-1 text-center">
-        
+         
             <template v-slot:item.action="{ item }">
-                <v-icon red @click="deleteItem(item)">mdi-delete</v-icon>
+                <v-icon red @click="removeProduct(item)">mdi-delete</v-icon>
             </template>
 
             <v-container slot="no-data">
@@ -89,6 +88,9 @@ import axios from "axios"
 import baseUrl from "../utils/baseUrl.js"
 export default {
     name:"Products",
+    created(){
+        this.getAll()
+    },
     data(){
         return{  
             url:  `${baseUrl()}product`,
@@ -109,6 +111,8 @@ export default {
                 un : ""
             },
             productList:[],
+            un: ["un", "caixa", "kg", "litro"],
+            type: ["perecível", "não perecível", "quimíco", "inflamável"]        
         }
     }, 
     methods:{
@@ -133,8 +137,7 @@ export default {
         addProduct(){
         return axios.post(this.url, this.product)
             .then(response => {         
-            console.log(response)
-            
+                       
             if(response.status == 200){
                 this.snackbarShow("Produto adicionado com sucesso", "green", true)            
                 this.getAll()       
@@ -145,24 +148,24 @@ export default {
                 this.snackbarShow(`Ocorreu um problema ao criar o Produto (erro ${error.response})`, "red", true)
             })      
         },
-    removeLocal(){            
-      //TODO: Verificar se tem algum item no estoque antes de deletar.
-      return axios.delete(`${this.url}/${this.selectedLocal.id}`)
-        .then(response => {
-        this.showDeleteModal = false
-        this.getAll()
-      })       
-      
-    },
-    openDeleteModal(local){
-      this.selectedLocal = local     
-      this.showDeleteModal = true 
-    },
-    snackbarShow(text, color, show){
-      this.snackbarText = text
-      this.snackbarColor = color
-      this.snackbar = show
-    }
+        removeProduct(product){            
+            
+            return axios.delete(`${this.url}/${product.id}`)
+            .then(response => {
+            this.showDeleteModal = false
+            this.getAll()
+            })       
+        
+        },
+        openDeleteModal(local){
+            this.selectedLocal = local     
+            this.showDeleteModal = true 
+        },
+        snackbarShow(text, color, show){
+            this.snackbarText = text
+            this.snackbarColor = color
+            this.snackbar = show
+        }
     },
     computed:{
         newProductButtonIcon(){
