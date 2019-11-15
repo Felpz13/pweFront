@@ -1,12 +1,26 @@
 <template>
     <v-container>
+        <v-row>
+            <v-col
+            cols="4">
+                <v-autocomplete
+                v-model="selectedLocal"
+                label="Selecione o estoque"
+                :items="localList">
+                    <template slot="no-data">
+                        <p>Nenhum resultado encontrado!!</p>
+                    </template>
+                </v-autocomplete>
+            </v-col>
+        </v-row>
+
         <div
         class="d-flex flex-row-reverse mb-5 mr-10">
             <v-btn :color="newProductButtonColor" fab large dark @click="newProduct = !newProduct">
                 <v-icon>{{newProductButtonIcon}}</v-icon>
             </v-btn>
-        </div>
-
+        </div>       
+        
         <v-card 
         class="mb-5"
         v-show="newProduct">
@@ -50,7 +64,7 @@
 
         <v-data-table 
         :headers="tableHeaders"
-        :items="productList"
+        :items="filteredProductList"
         :items-per-page="5"    
         class="elevation-1 text-center">
          
@@ -91,6 +105,14 @@ export default {
     created(){
         this.getAll()
     },
+    mounted(){
+        axios.get(`${baseUrl()}local`)
+        .then(response => {
+            response.data.forEach(local => {
+                this.localList.push(local.name)               
+            });
+        })
+    },
     data(){
         return{  
             url:  `${baseUrl()}product`,
@@ -110,7 +132,9 @@ export default {
                 type : "",
                 un : ""
             },
-            productList:[],
+            selectedLocal: "",
+            filteredProductList : [],
+            localList: [],            
             un: ["un", "caixa", "kg", "litro"],
             type: ["perecível", "não perecível", "quimíco", "inflamável"]        
         }
@@ -131,7 +155,7 @@ export default {
         getAll(){
             return axios.get(this.url)
                 .then(response => {
-                this.productList = response.data
+                this.filteredProductList = response.data
             })
         },
         addProduct(){
@@ -173,6 +197,10 @@ export default {
         },
         newProductButtonColor(){
             return this.newProduct? 'red' : 'success'
+        },
+        productList(){
+            //todo - pegar os produtos do end point enviar 
+            this.getAll();
         }
     }
 }

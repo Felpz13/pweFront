@@ -111,16 +111,14 @@ export default {
         axios.get(`${baseUrl()}local`)
         .then(response => {
             response.data.forEach(local => {
-                this.localDatabase.push(local.name)
-                console.log(local.name)
+                this.localDatabase.push(local.name)               
             });
         })
 
         axios.get(`${baseUrl()}product`)
         .then(response => {
             response.data.forEach(product => {
-                this.productsDatabase.push(product.name)
-                console.log(product.name)
+                this.productsDatabase.push(product.name)          
             });
         })
     },
