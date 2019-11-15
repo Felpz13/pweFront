@@ -45,6 +45,13 @@
     <v-app-bar app color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>{{title}}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <div
+      class="d-flex justify-end"
+      v-if="login.isActive"
+      @click="logout()">
+        <v-icon>mdi-logout</v-icon>
+      </div>
     </v-app-bar>
 
     <v-content 
@@ -65,6 +72,53 @@
     <v-footer color="indigo" app>
       <span class="white--text">&copy; IFSP 2019</span>
     </v-footer>
+
+    <v-overlay :value="login.modal">
+      <v-card
+      class="pa-10 text-center">
+        <p>Bem-vindo</p>
+        <v-row>
+          <v-text-field
+            label="Usuário"
+            placeholder="Insira o usuário"
+            outlined
+            v-model="login.user"
+          ></v-text-field>
+        </v-row>
+        <v-row>
+          <v-text-field
+            label="Senha"
+            placeholder="Insira a senha"
+            outlined
+            v-model="login.pass"
+            :append-icon="login.show1 ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="login.show1 ? 'text' : 'password'"
+            @click:append="login.show1 = !login.show1"
+          ></v-text-field>
+        </v-row>
+        <v-row
+        class="d-flex justify-space-around">
+          <v-col
+          cols="5">
+            <v-btn
+            @click="login.modal = false">
+              Cancelar
+            </v-btn>
+          </v-col>
+          <v-col
+          cols="5">
+            <v-btn
+            @click="doLogin()">
+              Logar
+            </v-btn>
+          </v-col>
+          
+        </v-row>
+        <p>
+            {{this.login.text}}
+        </p>
+      </v-card>
+    </v-overlay>
   </v-app>
 </template>
 
@@ -81,9 +135,18 @@
       Home,
       Products,
       CargoHandling
+
     },
     data: () => ({
       drawer: null,
+      login:{
+        modal: false,
+        user: "",
+        pass: "",
+        text: "",
+        show1: false,
+        isActive: false,
+      },      
       menu : {
         home: true,
         locals: false,
@@ -93,9 +156,29 @@
     }),
     methods:{
       selectMenu(item){       
-        for(let menuItem in this.menu){          
-          menuItem == item ? this.menu[menuItem] = true : this.menu[menuItem] = false          
+        if(this.login.isActive){
+            for(let menuItem in this.menu){          
+            menuItem == item ? this.menu[menuItem] = true : this.menu[menuItem] = false          
+          }
+        }else{
+          item != "home"? this.login.modal = true : this.login.modal = false
+                   
+        }        
+      },
+      doLogin(){
+        if(this.login.user == "admin" && this.login.pass == "admin"){
+          this.login.isActive = true
+          this.login.modal = false
+        }else{
+          this.login.text = "Usuário e/ou Senha incorreto(s)."
         }
+      },
+      logout(){
+        this.selectMenu("home")
+
+        this.login.isActive = false
+        this.login.pass = ""
+        this.login.user = ""        
       }
     },
     computed:{
@@ -110,6 +193,11 @@
           return "Movimentações"
         }     
         return ""   
+      }
+    },
+    watch:{
+      'login.modal': function(){
+        this.login.text = ""
       }
     }
   }
