@@ -8,7 +8,7 @@
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Home</v-list-item-title>
+            <v-list-item-title>Sobre</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -63,7 +63,7 @@
     </v-content>
 
     <v-footer color="indigo" app>
-      <span class="white--text">&copy; Gu3002284 2019</span>
+      <span class="white--text">&copy; IFSP 2019</span>
     </v-footer>
   </v-app>
 </template>

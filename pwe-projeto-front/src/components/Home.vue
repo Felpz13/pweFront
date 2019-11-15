@@ -29,8 +29,22 @@
                     </v-timeline-item>
                 </v-timeline>
             </template>
-        </v-img>              
-    </v-container>
+        </v-img>    
+        <v-row>
+            <v-col
+            class="text-center"
+            cols="6">
+                <p>Emanuel Ricardo Biet Resende</p>
+                <p>GU3001601</p>
+            </v-col>
+            <v-col
+            class="text-center"
+            cols="6">
+                <p>Felipe Pereira Claro</p>
+                <p>GU3002284</p>
+            </v-col>
+        </v-row>          
+    </v-container>    
 </template>
 <script>
 export default {

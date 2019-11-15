@@ -201,6 +201,7 @@ export default {
         productList(){
             //todo - pegar os produtos do end point enviar 
             this.getAll();
+            return this.filteredProductList
         }
     }
 }

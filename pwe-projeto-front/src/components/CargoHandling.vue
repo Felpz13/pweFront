@@ -83,7 +83,8 @@
                             </v-col>
 
                             <v-col>
-                                <v-btn>
+                                <v-btn
+                                @click="addTransaction()">
                                     Finalizar
                                 </v-btn>
                             </v-col>
@@ -123,14 +124,14 @@ export default {
         })
     },
     data(){
-        return{            
+        return{       
+            url: `${baseUrl()}cargoHandling`,     
             newTransaction: {
-                idTransaction: "",
                 idLocal: "",
                 idProduct: "",
                 quantity: "",
                 date: "",
-                transactionType : Boolean, //true -> entrada  |  false -> saida
+                transactionType : true, //true -> entrada  |  false -> saida
             },
             localDatabase: [],
             productsDatabase: []
@@ -144,6 +145,12 @@ export default {
             const yyyy = today.getFullYear();
 
             return `${dd}/${mm}/${yyyy}`
+        },
+        addTransaction(){             
+            return axios.post(this.url, this.newTransaction)
+            .then(response => {         
+                console.log(response)
+            })
         }
     },
     computed:{
