@@ -4,9 +4,12 @@
             <v-col
             cols="4">
                 <v-autocomplete
-                v-model="selectedLocal"
+                v-model="product.idLocal"
                 label="Selecione o estoque"
-                :items="localList">
+                :items="localList"
+                item-text="name"
+                item-value="id"
+                >
                     <template slot="no-data">
                         <p>Nenhum resultado encontrado!!</p>
                     </template>
@@ -100,6 +103,7 @@
 <script>
 import axios from "axios"
 import baseUrl from "../utils/baseUrl.js"
+import { watch } from 'fs'
 export default {
     name:"Products",
     created(){
@@ -109,13 +113,15 @@ export default {
         axios.get(`${baseUrl()}local`)
         .then(response => {
             response.data.forEach(local => {
-                this.localList.push(local.name)               
+                this.localList.push(local)               
             });
+            console.log(this.localList)
         })
     },
     data(){
         return{  
             url:  `${baseUrl()}product`,
+            localUrl: `${baseUrl()}productByIdLocal/`,
             snackbar: false,
             snackbarText: String,     
             snackbarColor: "green",
@@ -130,9 +136,9 @@ export default {
             product:{
                 name : "",
                 type : "",
-                un : ""
+                un : "",
+                idLocal : ""
             },
-            selectedLocal: "",
             filteredProductList : [],
             localList: [],            
             un: ["un", "caixa", "kg", "litro"],
@@ -153,7 +159,7 @@ export default {
             this.snackbar = true
         },
         getAll(){
-            return axios.get(this.url)
+            return axios.get(this.localUrl+this.product.idLocal)
                 .then(response => {
                 this.filteredProductList = response.data
             })
@@ -182,7 +188,7 @@ export default {
         
         },
         openDeleteModal(local){
-            this.selectedLocal = local     
+            this.product.local = local     
             this.showDeleteModal = true 
         },
         snackbarShow(text, color, show){
@@ -202,6 +208,11 @@ export default {
             //todo - pegar os produtos do end point enviar 
             this.getAll();
             return this.filteredProductList
+        },
+    },
+    watch:{
+        'product.idLocal'(){
+            this.getAll()
         }
     }
 }

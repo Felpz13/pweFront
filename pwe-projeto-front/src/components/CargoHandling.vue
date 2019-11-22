@@ -9,7 +9,7 @@
             cols="4">
                 <v-btn block
                 class="button-frame green"
-                @click="newTransaction.transactionType = true">
+                @click="newTransaction.transactionBool = true">
                     <v-icon large 
                     color="white">
                         mdi-arrow-up
@@ -21,7 +21,7 @@
             cols="4">
                 <v-btn block
                 class="button-frame red"
-                @click="newTransaction.transactionType = false">             
+                @click="newTransaction.transactionBool = false">             
                     <v-icon large 
                     color="white">
                         mdi-arrow-down
@@ -93,6 +93,19 @@
                 </div>
             </v-card>
         </v-container>
+        <v-snackbar
+        v-model="snackbar"
+        :color="snackbarColor"
+        top="top"
+        right="right">    
+        {{ snackbarText }}
+        <v-btn
+            color="white"
+            text
+            @click="snackbar = false">
+            Fechar
+        </v-btn>
+        </v-snackbar>
     </v-container>
     
 </template>
@@ -125,13 +138,17 @@ export default {
     },
     data(){
         return{       
-            url: `${baseUrl()}cargoHandling`,     
+            url: `${baseUrl()}cargoHandling`,
+            snackbar: false,
+            snackbarText: String,     
+            snackbarColor: "green",     
             newTransaction: {
                 idLocal: "",
                 idProduct: "",
                 quantity: "",
                 date: "",
-                transactionType : true, //true -> entrada  |  false -> saida
+                transactionBool : true, //true -> entrada  |  false -> saida
+                transactionType : "entrada"
             },
             localDatabase: [],
             productsDatabase: []
@@ -149,17 +166,30 @@ export default {
         addTransaction(){             
             return axios.post(this.url, this.newTransaction)
             .then(response => {         
-                console.log(response)
+                if(response.data != 0){    
+                this.snackbarText = `transação realizada com sucesso!`
+                this.snackbarColor = "green"
+                
+                }else{
+                    this.snackbarText = "Não é possível realizar a transação, falta produto no estoque!"
+                    this.snackbarColor = "red"
+                }
+                this.snackbar = true
             })
         }
     },
     computed:{
         transactionTypeText(){
-            return this.newTransaction.transactionType ? "Nova Entrada de Produto" : "Nova Saída de Produto"
+            return this.newTransaction.transactionBool ? "Nova Entrada de Produto" : "Nova Saída de Produto"
         },
         transactionTypeColor(){
-            return this.newTransaction.transactionType ? "green" : "red"
+            return this.newTransaction.transactionBool ? "green" : "red"
         }
+    },
+    watch:{
+        'newTransaction.transactionBool'(){
+            this.newTransaction.transactionBool ? this.newTransaction.transactionType = "entrada" : this.newTransaction.transactionType = "saida" 
+        } 
     }
 }
 </script>
